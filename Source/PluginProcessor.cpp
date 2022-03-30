@@ -43,12 +43,12 @@ juce::AudioProcessorValueTreeState::ParameterLayout DSPModuleChorusAudioProcesso
     //vector
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
     
-    //audio parameters and ranges
-    auto pRate = std::make_unique<juce::AudioParameterFloat>("rate", "Rate", 0.0, 50.0, 0.0);
+//    audio parameters and ranges // rate parameter has skew factor of 0.4 so the lower end of the range will fill more of the slider's length;
+    auto pRate = std::make_unique<juce::AudioParameterFloat>("rate", "Rate", juce::NormalisableRange<float>(0.0, 50.0, 0.1, 0.4), 0.0);
     auto pDepth = std::make_unique<juce::AudioParameterFloat>("depth", "Depth", 0.0, 1.0, 0.0);
-    auto pDelay = std::make_unique<juce::AudioParameterFloat>("delay", "Delay", 1.0, 50.0, 1.0);
+    auto pDelay = std::make_unique<juce::AudioParameterFloat>("delay", "Delay", 0.0, 50.0, 0.0);
     auto pFeedback = std::make_unique<juce::AudioParameterFloat>("feedback", "Feedback", -1, 1.0, 0.0);
-    auto pMix = std::make_unique<juce::AudioParameterFloat>("mix", "Mix", 0, 1.0, 0.0);
+    auto pMix = std::make_unique<juce::AudioParameterFloat>("mix", "Mix", 0, 1.0, 0.7);
     
     //pushing parameters back into the vector
     params.push_back(std::move(pRate));

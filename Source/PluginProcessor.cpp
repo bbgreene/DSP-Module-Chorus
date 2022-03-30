@@ -40,14 +40,17 @@ DSPModuleChorusAudioProcessor::~DSPModuleChorusAudioProcessor()
 
 juce::AudioProcessorValueTreeState::ParameterLayout DSPModuleChorusAudioProcessor::createParameterLayout()
 {
+    //vector
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
     
-    auto pRate = std::make_unique<juce::AudioParameterFloat>("rate", "Rate", 0, 100.0, 0.0);
-    auto pDepth = std::make_unique<juce::AudioParameterFloat>("depth", "Depth", 0, 1.0, 0.0);
-    auto pDelay = std::make_unique<juce::AudioParameterFloat>("delay", "Delay", 1, 100.0, 1.0);
+    //audio parameters and ranges
+    auto pRate = std::make_unique<juce::AudioParameterFloat>("rate", "Rate", 0.0, 50.0, 0.0);
+    auto pDepth = std::make_unique<juce::AudioParameterFloat>("depth", "Depth", 0.0, 1.0, 0.0);
+    auto pDelay = std::make_unique<juce::AudioParameterFloat>("delay", "Delay", 1.0, 50.0, 1.0);
     auto pFeedback = std::make_unique<juce::AudioParameterFloat>("feedback", "Feedback", -1, 1.0, 0.0);
     auto pMix = std::make_unique<juce::AudioParameterFloat>("mix", "Mix", 0, 1.0, 0.0);
     
+    //pushing parameters back into the vector
     params.push_back(std::move(pRate));
     params.push_back(std::move(pDepth));
     params.push_back(std::move(pDelay));
@@ -191,6 +194,7 @@ void DSPModuleChorusAudioProcessor::processBlock (juce::AudioBuffer<float>& buff
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
     
+    //my variables changing chorus params
     chorus.setRate(rate);
     chorus.setDepth(depth);
     chorus.setCentreDelay(delay);
@@ -200,6 +204,7 @@ void DSPModuleChorusAudioProcessor::processBlock (juce::AudioBuffer<float>& buff
     // My audio block object
     juce::dsp::AudioBlock<float> block (buffer);
     
+    //Chorus process replacing buffer
     chorus.process(juce::dsp::ProcessContextReplacing<float>(block));
 }
 
@@ -211,20 +216,21 @@ bool DSPModuleChorusAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* DSPModuleChorusAudioProcessor::createEditor()
 {
-//    return new DSPModuleChorusAudioProcessorEditor (*this);
+    // using generic UI
     return new juce::GenericAudioProcessorEditor (*this);
 }
 
 //==============================================================================
 void DSPModuleChorusAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
+    //Saving params
     juce::MemoryOutputStream stream(destData, false);
     treeState.state.writeToStream(stream);
 }
 
 void DSPModuleChorusAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // Recall params
+    //Recall params
     auto tree = juce::ValueTree::readFromData(data, size_t(sizeInBytes));
         
     if(tree.isValid())

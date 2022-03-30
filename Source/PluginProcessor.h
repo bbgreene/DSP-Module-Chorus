@@ -60,6 +60,7 @@ private:
     //Instantiating Chorus dsp object
     juce::dsp::Chorus<float> chorus;
     
+    // declaring chorus variables
     float rate = 1.0;
     float depth = 1.0;
     float delay = 1.0;
